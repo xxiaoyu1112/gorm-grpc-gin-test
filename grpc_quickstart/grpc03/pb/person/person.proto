@@ -1,0 +1,26 @@
+syntax = "proto3"; // 告诉编译器 用 proto3来解读
+
+package person; // 给 proto分包用的 包
+
+option go_package="github/pixel/pb/person;person";   // "包路径（从mod下开始写）；别名"
+
+
+
+message PersonReq{   // 相当于golang中结构体的名字
+    string name = 1;
+    int32 age =2;
+
+}
+
+message PersonRes{   // 相当于golang中结构体的名字
+  string name = 1;
+  int32 age =2;
+
+}
+
+service SearchService {
+  rpc Search(PersonReq) returns (PersonRes);   // 传统的 即可响应
+  rpc SearchIn(stream PersonReq) returns (PersonRes);   // 入参为流
+  rpc SearchOut(PersonReq) returns (stream PersonRes);   // 出参为流
+  rpc SearchIO(stream PersonReq) returns (stream PersonRes);   // 出入均为流
+}

@@ -1,0 +1,51 @@
+syntax = "proto3"; // 告诉编译器 用 proto3来解读
+
+package person; // 给 proto分包用的 包
+
+option go_package="github/pixel/pb/person;person";   // "包路径（从mod下开始写）；别名"
+
+import "home/home.proto";
+
+//message Home{
+//  repeated Person person = 1;
+//  message Visitor {
+//    string name =1;
+//  }
+//  Visitor v=2;
+//}
+
+message Person{   // 相当于golang中结构体的名字
+    string name = 1;
+    int32 age =2;
+//    repeated string test =4;
+//    map <string,string> test_map = 5;
+
+    enum SEX{  // 枚举类型，必须有一个参数值为0
+      option allow_alias = true;   // 如果有相同的key值，使用allow_alias 属性
+      man = 0;
+      woman = 1;
+      GIRL = 1;
+      otther = 2;
+    }
+
+    // oneof 可以断言成指针类型
+    oneof TestOneOf {
+      string one = 6;
+      string two = 7;
+      string three = 8;
+    }
+
+    home.Home i_home = 9;
+
+    SEX sex = 3;
+
+    reserved "test_map","test"; // 保留字，使用后不会被生成，只给编辑工具看的，想用的时候再取消reserved
+    reserved 5;
+}
+
+service SearchService {
+  rpc Search(Person) returns (Person);   // 传统的 即可响应
+  rpc SearchInt(stream Person) returns (Person);   // 入参为流
+  rpc SearchOut(Person) returns (stream Person);   // 出参为流
+  rpc SearchIO(stream Person) returns (stream Person);   // 出入均为流
+}
